@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+
 import jingo
 import jinja2
 
@@ -14,3 +16,12 @@ jingo.env.globals['waffle'] = {
     'switch': switch_is_active,
     'sample': sample_is_active,
 }
+
+
+@contextmanager
+def patch_waffle(key, method):
+    """A method to patch jingo for tests"""
+    item = jingo.env.globals['waffle']
+    orig, item[key] = item[key], method
+    yield
+    item[key] = orig
